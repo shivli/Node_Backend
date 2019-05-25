@@ -21,6 +21,7 @@ console.log(req.body)
         role: role,
         password:req.body.password,
         phone:req.body.phone,
+        skills:req.body.tags
         // location: req.body.location
     });
 
@@ -131,7 +132,8 @@ exports.create_job= (req, res) => {
         position: req.body.position,
         Experience: req.body.Experience,
         city: req.body.city,
-        contact:req.body.contact
+        contact:req.body.contact,
+        skills:req.body.tags
     });
 
      // Save user in the database
@@ -144,6 +146,10 @@ exports.create_job= (req, res) => {
          });
      });
 };
+
+
+
+
 exports.company_jobs=(req,res)=>
 {
     my_model.b.find({'company_Name':req.query.company_Name})
@@ -220,34 +226,6 @@ exports.update = (req, res) => {
         }
     });
 }
-// exports.update_jobs = (req, res) => {
-
-//     if (!req.body) {
-//         return res.status(400).send({
-//             message: "jobs can not be empty"
-//         });
-//     }
-
-//     // Find job and update it with the request body
-//     my_model.b.findOneAndUpdate({ 'job_id': req.params.id }, { $set: req.body }, { new: true })
-//         .then(data2 => {
-//             if (!data2) {
-//                 return res.status(404).send({
-//                     message: "job not found with id " + req.params.id
-//                 });
-//             }
-//             res.send(data2);
-//         }).catch(err => {
-//             if (err.kind === 'ObjectId') {
-//                 return res.status(404).send({
-//                     message: "job not found with id " + req.params.id
-//                 });
-//             }
-//             return res.status(500).send({
-//                 message: "Error updating job with id " + req.params.id
-//             });
-//         });
-// };
 // Delete job
 exports.delete_jobs = (req, res) => {
     my_model.b.findByIdAndRemove(req.params.id)
@@ -271,74 +249,50 @@ exports.delete_jobs = (req, res) => {
 };
 
 //next db apply
-exports.create_apply = (req, res) => {
+exports.applyjobs = (req, res) => {
+    // var status_flag = jobenum.jobstatus.applied;
     if (!req.body) {
         return res.send({ message: "Cannot be empty" });
     }
-    const apply_status = myenum2.selected
+    else {
+        const data = new my_model.c({
+            user_id: req.body.user_id,
+            job_id: req.body.job_id,
+            company_name: req.body.company_name,
+            job_designation: req.body.job_designation,
+            city: req.body.location,
+          
+        })
+        data.save((err, respo) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                res.send(respo);
+            }
+        })
+    }
+}
+exports.findAll = (req, res) => {
+    my_model.c.find(
+      { company_name: req.params.companyname },
+      (err, data) => {
+        if (err) {
+          console.log(err)
+        } else {
+          res.send(data)
+        }
+      }
+    )
+  }
 
-    const data3 = new my_model.c({
-        apply_id: req.body.apply_id,
-        user_id: req.body.user_id,
-        status: apply_status,
-        company: req.body.company
-
+exports.find_applies = (req, res) => {
+    my_model.c.find({ 'user_id': req.params.user_id }, (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.send(data);
+        }
     })
-    data3.save()
-        .then(data3 => {
-            res.send(data3);
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while creating the user."
-            });
-        });
-};
-
-
-//apply db
-// exports.update_apply = (req, res) => {
-//     if (!req.body) {
-//         return res.send({
-//             message: "content cannot be empty"
-//         });
-//     }
-
-//     my_model.a.find({ 'user_id': req.params.user_id })
-//         .then(response1 => {
-//             if (response1.user_roles == myenum1.company) {
-//                 let job_status = req.body.apply_status;
-//                 let changedStatus = myenum2[job_status];
-
-//                 my_model.c.findOneAndUpdate({ 'user_id': req.params.user_id }, { $set: { job_status: changedStatus } }, { new: true }, (err, response2) => {
-//                     if (err) {
-//                         res.status(404).send({
-//                             message: err.message || "Some error occured "
-//                         });
-//                     }
-//                     else {
-//                         res.json(response2);
-//                     }
-//                 })
-//             }
-//             else {
-//                 res.json({ message: 'only company can update' });
-//             }
-//         }).catch(err => {
-//             console.log(err);
-//         });
-// }
-
-
-// // Retrieve job applied from the database.
-// exports.findAll_apply = (req, res) => {
-//     my_model.c.find({ 'company': req.params.company }, (err, response1) => {
-//         if (err) {
-//             res.status(404).send({
-//                 message: err.message || "Some error occured while Fetching Data "
-//             });
-//         }
-//         else {
-//             res.json(response1);
-//         }
-//     })
-// }
+}

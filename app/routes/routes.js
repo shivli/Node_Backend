@@ -30,17 +30,11 @@ module.exports = (app) => {
   // Delete a job with userid
   app.delete('/jobs/:id', path.delete_jobs);
 
-  // Create a new job
-  app.post('/apply/:id', path.create_apply);
-
   // Create a new apply
-  // app.post('/apply', path.create_apply);
+   app.post('/apply', path.applyjobs);
+   app.get('/apply/find_applies/:user_id', path.find_applies);
+   app.get('/applied/:companyname', path.findAll)
 
-  // Retrieve all apply
-  // app.get('/apply/:company', path.findAll_apply);
-
-  // update apply
-  // app.put('/apply/:company_id/:user_id', path.update_apply);
 
 
 

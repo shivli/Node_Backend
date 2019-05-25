@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema({
     password: { type: String, required: true },
     phone: { type: Number, required: true },
     role: { type: Number, required: true },
+    skills:{ type : Array , required:true }
+
     // location: {
     //     type: { type: String },
     //     coordinates: []
@@ -20,6 +22,7 @@ const jobsSchema = mongoose.Schema({
     Experience:{type:String,required:true},
     city:{type:String,required:true},
     contact:{type:String,required:true},
+    skills:{ type : Array , required:true }
     // location: {
     //     type: { type: String },
     //     coordinates: []
@@ -30,10 +33,13 @@ const jobsSchema = mongoose.Schema({
 // jobsSchema.index({ location: "2dsphere" });
 
 const applySchema = mongoose.Schema({
-    apply_id: { type: Number, required: true, max: 100 },
+    // apply_id: { type: Number, required: true, max: 100 },
     user_id: { type: String, required: true, max: 100 },
-    status: { type: Number, required: true },
-    company: { type: String, required: true }
+    job_id: { type: String, required: true, max: 100 },
+    // status: { type: Number, default: 11 },
+    company_name: { type: String, required: true },
+    job_designation: { type: String, required: true },
+    city:{ type: String, required: true }
 
 });
 module.exports =
