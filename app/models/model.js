@@ -22,7 +22,8 @@ const jobsSchema = mongoose.Schema({
     Experience:{type:String,required:true},
     city:{type:String,required:true},
     contact:{type:String,required:true},
-    skills:{ type : Array , required:true }
+    skills:{ type : Array , required:true },
+    time : { type: Number, default: (new Date()).getTime() } 
     // location: {
     //     type: { type: String },
     //     coordinates: []

@@ -12,16 +12,16 @@ exports.create = (req, res) => {
     }
 
     const role = myenum1[req.body.role]
-console.log(req.body)
+    console.log(req.body)
     // Create a user
     const data1 = new my_model.a({
-    
+
         name: req.body.name,
         email: req.body.email,
         role: role,
-        password:req.body.password,
-        phone:req.body.phone,
-        skills:req.body.tags
+        password: req.body.password,
+        phone: req.body.phone,
+        skills: req.body.tags
         // location: req.body.location
     });
 
@@ -37,7 +37,7 @@ console.log(req.body)
 };
 
 exports.findOne = async (req, res) => {
-    const data = my_model.a.findOne({ 'email': req.body.email,'password':req.body.password }, (err, response) => {
+    const data = my_model.a.findOne({ 'email': req.body.email, 'password': req.body.password }, (err, response) => {
         if (err) {
             console.log(data)
             res.status(404).send({
@@ -117,7 +117,7 @@ exports.delete = (req, res) => {
 
 //next db job
 // Create and Save a new job
-exports.create_job= (req, res) => {
+exports.create_job = (req, res) => {
     // Validate request
     if (!!req.body.content) {
         return res.status(400).send({
@@ -125,63 +125,60 @@ exports.create_job= (req, res) => {
         });
     }
     // Create a job
-    
+
 
     const data2 = new my_model.b({
         company_Name: req.body.company_Name,
         position: req.body.position,
         Experience: req.body.Experience,
         city: req.body.city,
-        contact:req.body.contact,
-        skills:req.body.tags
+        contact: req.body.contact,
+        skills: req.body.tags
     });
 
-     // Save user in the database
-     data2.save()
-     .then(data => {
-         res.json(data);
-     }).catch(err => {
-         res.json({
-             message: err.message || "Some error occurred while adding the job."
-         });
-     });
+    // Save user in the database
+    data2.save()
+        .then(data => {
+            res.json(data);
+        }).catch(err => {
+            res.json({
+                message: err.message || "Some error occurred while adding the job."
+            });
+        });
 };
 
 
 
 
-exports.company_jobs=(req,res)=>
-{
-    my_model.b.find({'company_Name':req.query.company_Name})
-    .then((response)=>
-    {
-        res.send(response)
+exports.company_jobs = (req, res) => {
+    my_model.b.find({ 'company_Name': req.query.company_Name })
+        .then((response) => {
+            res.send(response)
 
-    }).catch((err)=>
-    {
-        res.status(404).send({
-            message: err.message || "Some error occured while Fetching Data From database"
-        });
-    })
+        }).catch((err) => {
+            res.status(404).send({
+                message: err.message || "Some error occured while Fetching Data From database"
+            });
+        })
 }
 
-    // Save job in the database only admin and company can add a job
-    // const response = await my_model.a.findOne({ 'user_id': req.body.id })
-    // if (!response) {
-    //     res.json({ 'error': 'no user exists with given id' })
-    // }
-    // console.log(response)
-    // if (response.user_roles == myenum1.company) {
-    //     data2.save()
-    //         .then(data2 => {
-    //             res.send(data2);
-    //         }).catch(err => {
-    //             res.status(500).send({
-    //                 message: err.message || "Some error occurred while creating the job."
-    //             });
-    //         })
+// Save job in the database only admin and company can add a job
+// const response = await my_model.a.findOne({ 'user_id': req.body.id })
+// if (!response) {
+//     res.json({ 'error': 'no user exists with given id' })
+// }
+// console.log(response)
+// if (response.user_roles == myenum1.company) {
+//     data2.save()
+//         .then(data2 => {
+//             res.send(data2);
+//         }).catch(err => {
+//             res.status(500).send({
+//                 message: err.message || "Some error occurred while creating the job."
+//             });
+//         })
 
-    // }
+// }
 //     else if (response.user_roles == myenum1.admin) {
 //         data2.save()
 //             .then(data2 => {
@@ -209,6 +206,54 @@ exports.findAll_jobs = (_req, res) => {
             });
         });
 };
+exports.findAll_loginjobs = (req, res) => {
+    var skills = req.query.skills
+    var newdata = []
+    count = 0
+    array = []
+    skills = skills.map((data) => JSON.parse(data))
+    my_model.b.find()
+        .then(path => {
+            path.map((jobdata) => {
+                count = 0
+                jobdata.skills.map((jobskills) => {
+
+                    skills.map((userskills) => {
+                        if (jobskills.id === userskills.id) {
+                            count++
+
+
+                        }
+
+                    })
+
+                })
+                if (count > 0) {
+                    newdata.push({ count: count, job: jobdata, time: jobdata.time })
+                }
+                console.log('count', count)
+
+            })
+            var sortedarray = newdata.sort(function (a, b) {
+                if (a.count !== b.count) {
+                    return b.count - a.count
+                }
+                if (a.count === b.count) {
+                    return b.time - a.time
+
+                }
+
+            })
+            sortedarray.map((data) => {
+                array.push(data.job)
+            })
+            res.send(array)
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving user."
+            });
+        });
+};
 //update job
 exports.update = (req, res) => {
     if (!req.body) {
@@ -217,7 +262,7 @@ exports.update = (req, res) => {
         });
     }
 
-    my_model.b.update({ '_id': req.body.id }, { $set: req.body }, { new: true }, (err, response) => {
+    my_model.b.update({ '_id': req.body.id }, { $set: req.body, "time": (new Date()).getTime() }, { new: true }, (err, response) => {
         if (err) {
             console.log(err);
         }
@@ -261,7 +306,7 @@ exports.applyjobs = (req, res) => {
             company_name: req.body.company_name,
             job_designation: req.body.job_designation,
             city: req.body.location,
-          
+
         })
         data.save((err, respo) => {
             if (err) {
@@ -275,16 +320,16 @@ exports.applyjobs = (req, res) => {
 }
 exports.findAll = (req, res) => {
     my_model.c.find(
-      { company_name: req.params.companyname },
-      (err, data) => {
-        if (err) {
-          console.log(err)
-        } else {
-          res.send(data)
+        { company_name: req.params.companyname },
+        (err, data) => {
+            if (err) {
+                console.log(err)
+            } else {
+                res.send(data)
+            }
         }
-      }
     )
-  }
+}
 
 exports.find_applies = (req, res) => {
     my_model.c.find({ 'user_id': req.params.user_id }, (err, data) => {

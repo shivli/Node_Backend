@@ -23,6 +23,7 @@ module.exports = (app) => {
 
   // Retrieve all job
   app.get('/jobs', path.findAll_jobs);
+  app.get('/loginjobs', path.findAll_loginjobs);
 
   // Update a job 
   app.put('/updatedjob', path.update);
