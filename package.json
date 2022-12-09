@@ -17,10 +17,10 @@
   "author": "mayank",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "enum": "^2.5.0",
-    "express": "^4.16.4",
+    "express": "^4.18.2",
     "mongoose": "^5.4.14",
     "nodemon": "^1.18.11"
   }
